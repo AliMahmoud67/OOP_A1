@@ -47,10 +47,10 @@ public:
 //////////////////////////////////////////////////////////////////////////////////
 class Register{
 private:
-    int Reg[16];
+    string Reg[16];
 public:
-    int getCell(int address);
-    void setCell(int address, int value);
+    string getCell(int address);
+    void setCell(int address, string value);
 
 };
 //////////////////////////////////////////////////////////////////////////////////
@@ -64,10 +64,12 @@ class Memory{
 //////////////////////////////////////////////////////////////////////////////////
 class CU{
     public:
-    void load(int iR, int iM, Register&reg, Memory&mem, ALU al);
-    // void load(int iR,int value ,Register&reg);
-
-    
+    void load(string iR, string iM, Register&reg, Memory&mem, ALU alu);
+    void load(string iR,string value ,Register&reg, ALU alu);
+    void store(string iR, string iM , Register&reg, Memory&mem, ALU alu);
+    void move(string iR1, string iR2, Register&reg, ALU alu);
+    void jump(string iR, string iM, Register& reg, Memory& mem, int& programCounter, ALU alu);
+    void halt();
 
 };
 //////////////////////////////////////////////////////////////////////////////////

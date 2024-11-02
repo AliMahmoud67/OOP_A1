@@ -1,7 +1,5 @@
 #include"Vole.h"
 
-
-
 int ALU::hexToDec(const string& hexStr) {
         int decimal;
         stringstream ss;
@@ -260,22 +258,49 @@ string ALU::add2_IEEE_Float(string hex1, string hex2){
 
 /////////////////////////////////////////////////////////////////////////////////
 
-void CU::load(int iR, int iM, Register&reg, Memory&mem, ALU al){
-    int temp = al.hexToDec((mem.getCell(iM))); 
-    reg.setCell(iR, temp);
+void CU::load(string iR, string iM, Register&reg, Memory&mem, ALU alu){ //OP-1
+    int R = alu.hexToDec(iR);
+    int M = alu.hexToDec(iM);
+    reg.setCell(R, mem.getCell(M));
 }
-// void CU::load(int iR,int value ,Register&reg){
+void CU::load(string iR, string value ,Register&reg, ALU alu){ //OP-2
+    int R = alu.hexToDec(iR);
+    reg.setCell(R, value);
+}
 
-// }
+void CU::store(string iR, string iM , Register&reg, Memory&mem, ALU alu){ //OP-3
+    int R = alu.hexToDec(iR);
+    int M = alu.hexToDec(iM);
+    mem.setCell(M, reg.getCell(R));
+    if(iM== "00"){
+        mem.setCell(M, reg.getCell(R));
+        cout << reg.getCell(R);
+    }
+}
 
+void CU::move(string iR1, string iR2, Register&reg, ALU alu){ //OP-4
+    int R1 = alu.hexToDec(iR1);
+    int R2 = alu.hexToDec(iR2);
+    reg.setCell(R2, reg.getCell(R1));
+}
 
+void CU::jump(string iR, string iM, Register& reg, Memory& mem, int& programCounter, ALU alu) { //OP-B
+    int R = alu.hexToDec(iR);
+    int M = alu.hexToDec(iM);
+    if (reg.getCell(R) == reg.getCell(0)) {
+        programCounter = M;
+    }
+}
 
+void CU::halt(){
+    exit(0);
+}
 
 /////////////////////////////////////////////////////////////////////////////////
-int Register::getCell(int address){
+string Register::getCell(int address){
     return Reg[address];
 }
-void Register::setCell(int address, int value){
+void Register::setCell(int address, string value){
     Reg[address] = value;
 }
 /////////////////////////////////////////////////////////////////////////////////
