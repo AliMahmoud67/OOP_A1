@@ -221,6 +221,7 @@ string ALU::doubleToHex(double d){
         for (int i = 0; i < movesNeeded; i++){
             moveDotRight(binResult);
         }
+        movesNeeded *= -1;
     }
 
     // Generating Mantisa
@@ -236,10 +237,12 @@ string ALU::doubleToHex(double d){
         }
     }
 
-    string expo = decimalToBinary(sign*movesNeeded + 4);
+    string expo = decimalToBinary(movesNeeded + 4);
+    // cout << sign*movesNeeded << endl;
     expo = expo.substr(expo.length() - 3);
 
     string IEEE_Memory = signChar + expo + mantisa;
+    // cout << IEEE_Memory << endl;
     string HexaResult = binarytohex(IEEE_Memory);
 
     return HexaResult; 
