@@ -275,7 +275,7 @@ void CU::store(string iR, string iM , Register&reg, Memory&mem, ALU alu){ //OP-3
     int R = alu.hexToDec(iR);
     int M = alu.hexToDec(iM);
     mem.setCell(M, reg.getCell(R));
-    if(iM== "00"){
+    if(iM == "00"){
         mem.setCell(M, reg.getCell(R));
         cout << reg.getCell(R);
     }
@@ -295,7 +295,7 @@ void CU::jump(string iR, string iM, Register& reg, Memory& mem, int& programCoun
     }
 }
 
-void CU::halt(){
+void CU::halt(){ // C000
     exit(0);
 }
 
@@ -315,11 +315,101 @@ void Memory::setCell(int address, string value){
 }
 /////////////////////////////////////////////////////////////////////////////////
 
+void Instructions::ReadFile(){
+    string filename;
+    ifstream instructFile;
+    // validation of filename
+    cout << "Enter Keywords' Filename: ";
+    while (true){
+        getline(cin, filename);
+        instructFile.open(filename, ios::in);
+        if (instructFile.is_open()){
+            break;
+        }else{
+            cout << "Error Filename is Invalid: ";
+        }
+    }
+    
+    string line,firstnumber,secondnumber;
+    int j=0;
+    
+    
+    while(getline(instructFile, line) && j < 256){ // 0000
+        firstnumber = line.substr(0,2);
+        memInstructions.setCell(j, firstnumber);
+        j++;
+        secondnumber = line.substr(2);
+        memInstructions.setCell(j, secondnumber);
+        j++;
+    }
+    instructFile.close();
+}
 
+// void Instructions::ReadFile(){
+//     string filename;
+//     ifstream instructFile;
+//     // validation of filename
+//     cout << "Enter Keywords' Filename: ";
+//     while (true){
+//         getline(cin, filename);
+//         instructFile.open(filename, ios::in);
+//         if (instructFile.is_open()){
+//             break;
+//         }else{
+//             cout << "Error Filename is Invalid: ";
+//         }
+//     }
+    
+//     string line;
+//     int j=0;
+    
+    
+//     while(getline(instructFile, line) && j < 16){ // 0000
+//         reg.setCell(j, line);
+//         j++;
+//     }
+//     instructFile.close();
+// }
 
 
 /////////////////////////////////////////////////////////////////////////////////
+void Machine::displayMemory(){
+    // Print the array in a 2D format
+    for (int row = 0; row < 16; ++row) {
+        for (int col = 0; col < 16; ++col) {
+            // Calculate the index in the 1D array
+            int adress = row * 16 + col;
+            // Print the element with leading zeros
+            cout << memInstructions.getCell(adress) << " "; // Print in hex format
+        }
+        cout << endl; // Move to the next line after each row
+    }
+}
+void Machine::displayRegister(){
+    for (int i = 0; i < 16; i++){
+        cout << "Register " << decToHex(i) << ": " << getCell(i) << endl; 
+    }
+}
 
+void Machine::runInstruction(){
+    
+    while (!((memInstructions.getCell(ProgramCounter)) == "C0"  && (memInstructions.getCell(ProgramCounter + 1)) == "00")){ // != C000
+        string LHS = memInstructions.getCell(ProgramCounter);
+        string RHS = memInstructions.getCell(ProgramCounter + 1);
+        switch (LHS[0]){
+        case '1':
+            
+            break;
+        
+        default:
+            break;
+        }
+
+        // cout << memInstructions.getCell(ProgramCounter) << memInstructions.getCell(ProgramCounter + 1) << ' '; 
+        ProgramCounter += 2;
+    }
+    
+}
 /////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////
