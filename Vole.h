@@ -33,14 +33,14 @@ public:
 //////////////////////////////////////////////////////////////////////////////////
 class Register{
 private:
-    string Reg[16];
+    string Reg[16] = {"00","00","00","00","00","00","00","00","00","00","00","00","00","00","00","00"};
 public:
     string getCell(int address);
     void setCell(int address, string value);
 
 };
 //////////////////////////////////////////////////////////////////////////////////
-class Memory{ //1234
+class Memory{
     private:
     string mem[256];
     public:
@@ -48,31 +48,34 @@ class Memory{ //1234
     void setCell(int address, string value);
 };
 //////////////////////////////////////////////////////////////////////////////////
-class CU{
-    public:
-    void load(string iR, string iM, Register&reg, Memory&mem, ALU alu);
-    void load(string iR,string value ,Register&reg, ALU alu);
-    void store(string iR, string iM , Register&reg, Memory&mem, ALU alu);
-    void move(string iR1, string iR2, Register&reg, ALU alu);
-    void jump(string iR, string iM, Register& reg, Memory& mem, int& programCounter, ALU alu);
-    void halt();
-};
 //////////////////////////////////////////////////////////////////////////////////
 class Instructions{
     protected:
     Memory memInstructions;
+    Register regInstructions;
     public:
-    // Register reg;
+    // Register reg;    
     void ReadFile();
     
 }; 
+/////////////////////////////////////////////////////////////////////////////////////
+class CU: public Instructions, public ALU{
+    public:
+    void load(string iR, string iM, Register&reg, Memory&mem);
+    void load(string iR,string value ,Register&reg);
+    void store(string iR, string iM , Register&reg, Memory&mem,string& screen);
+    void move(string iR1, string iR2, Register&reg);
+    void jump(string iR, string iM, Register& reg, Memory& mem, int& programCounter);
+    void halt();
+};
+
 //////////////////////////////////////////////////////////////////////////////////
-class Machine: public ALU, public Register, public Instructions, public CU{
+class Machine: public Register, public CU{
     public:
     int ProgramCounter = 16;
     void displayMemory();
     void displayRegister();
-    void runInstruction();
+    void runInstruction(bool checkstep);
 
 };
 //////////////////////////////////////////////////////////////////////////////////

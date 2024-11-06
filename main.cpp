@@ -27,16 +27,27 @@ int main(){
 
     cout << "------Welcome to Our Vole Machine Simulator------" << endl;
     while(true){
+        Machine mach;
         cout << "\nChoose What you want to do"<< endl;
-        cout << "1- Load Instructions From File\n2- End\n"<< endl;
+        cout << "1- Run Instructions \n2- Run Instructions Step by Step\n 3- Close Program\n"<< endl;
         string choice = isValidChoice2(input("Please choose a number from the menu: "));
 
         if(choice == "1"){ // Load File
-            Machine mach;
             mach.ReadFile();
-            mach.runInstruction();
+            bool checkstep;
+            mach.runInstruction(checkstep = 0);
+            mach.displayMemory();
+            mach.displayRegister();
 
-        }else if(choice == "2"){
+        }
+        else if(choice == "2"){
+            mach.ReadFile();
+            bool checkstep;
+            mach.runInstruction(checkstep = 1);
+            mach.displayMemory();
+            mach.displayRegister();
+        }
+        else if(choice == "3"){
             exit(0);
         }
     }

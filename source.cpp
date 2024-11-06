@@ -188,15 +188,15 @@ string ALU::doubleToHex(double d){
     int sign = doubleString[0] == '-'? -1: 1;
     char signChar = sign == -1 ?'1' : '0';
     // separate into 2 parts
-    string LHS = doubleString.substr(0, doubleString.find('.'));
-    string RHS = "0." + doubleString.substr(doubleString.find('.') + 1);
+    string LHS = doubleString.substr(0, doubleString.find('.')); //1.5
+    string RHS = "0." + doubleString.substr(doubleString.find('.') + 1); //0.5
 
-    string LHS_Bin = decimalToBinary(abs(stoi(LHS)));
+    string LHS_Bin = decimalToBinary(abs(stoi(LHS))); 
     double RHS_Double = stod(RHS);
     string RHS_Bin = doubletoBinary(RHS_Double);
     // cout << RHS_Bin << endl;
     // cout << LHS_Bin << endl;
-    string binResult = LHS_Bin + '.' +RHS_Bin;
+    string binResult = LHS_Bin + '.' +RHS_Bin; // 0.01 101.1
 
     // Get the most significant '1'
     int indexOfMostSigni1;
@@ -227,7 +227,7 @@ string ALU::doubleToHex(double d){
     // Generating Mantisa
     string mantisa = binResult.substr(binResult.find('.') + 1);
     if (mantisa.length() > 4){
-        mantisa = mantisa.substr(0, 4);
+        mantisa = mantisa.substr(0, 4); //0.01010101010
     }
 
     // Filling the mantisa with zeros if needed
@@ -237,7 +237,7 @@ string ALU::doubleToHex(double d){
         }
     }
 
-    string expo = decimalToBinary(movesNeeded + 4);
+    string expo = decimalToBinary(movesNeeded + 4); 
     // cout << sign*movesNeeded << endl;
     expo = expo.substr(expo.length() - 3);
 
@@ -261,35 +261,37 @@ string ALU::add2_IEEE_Float(string hex1, string hex2){
 
 /////////////////////////////////////////////////////////////////////////////////
 
-void CU::load(string iR, string iM, Register&reg, Memory&mem, ALU alu){ //OP-1
-    int R = alu.hexToDec(iR);
-    int M = alu.hexToDec(iM);
+void CU::load(string iR, string iM, Register&reg, Memory&mem){ //OP-1
+    int R = hexToDec(iR);
+    int M = hexToDec(iM);
     reg.setCell(R, mem.getCell(M));
+    
 }
-void CU::load(string iR, string value ,Register&reg, ALU alu){ //OP-2
-    int R = alu.hexToDec(iR);
+void CU::load(string iR, string value ,Register&reg){ //OP-2
+    int R = hexToDec(iR);
     reg.setCell(R, value);
 }
 
-void CU::store(string iR, string iM , Register&reg, Memory&mem, ALU alu){ //OP-3
-    int R = alu.hexToDec(iR);
-    int M = alu.hexToDec(iM);
-    mem.setCell(M, reg.getCell(R));
+void CU::store(string iR, string iM , Register&reg, Memory&mem,string& screen){ //OP-3
+    int R = hexToDec(iR);
+    int M = hexToDec(iM);
     if(iM == "00"){
         mem.setCell(M, reg.getCell(R));
-        cout << reg.getCell(R);
+        screen+=reg.getCell(R)+' ';
+    }else{
+        mem.setCell(M, reg.getCell(R));
     }
 }
 
-void CU::move(string iR1, string iR2, Register&reg, ALU alu){ //OP-4
-    int R1 = alu.hexToDec(iR1);
-    int R2 = alu.hexToDec(iR2);
+void CU::move(string iR1, string iR2, Register&reg){ //OP-4
+    int R1 = hexToDec(iR1);
+    int R2 = hexToDec(iR2);
     reg.setCell(R2, reg.getCell(R1));
 }
 
-void CU::jump(string iR, string iM, Register& reg, Memory& mem, int& programCounter, ALU alu) { //OP-B
-    int R = alu.hexToDec(iR);
-    int M = alu.hexToDec(iM);
+void CU::jump(string iR, string iM, Register& reg, Memory& mem, int& programCounter) { //OP-B
+    int R = hexToDec(iR);
+    int M = hexToDec(iM);
     if (reg.getCell(R) == reg.getCell(0)) {
         programCounter = M;
     }
@@ -387,28 +389,75 @@ void Machine::displayMemory(){
 }
 void Machine::displayRegister(){
     for (int i = 0; i < 16; i++){
-        cout << "Register " << decToHex(i) << ": " << getCell(i) << endl; 
+        cout << "Register " << decToHex(i) << ": " << regInstructions.getCell(i) << endl; 
     }
 }
 
-void Machine::runInstruction(){
-    
-    while (!((memInstructions.getCell(ProgramCounter)) == "C0"  && (memInstructions.getCell(ProgramCounter + 1)) == "00")){ // != C000
+void Machine::runInstruction(bool checkstep){
+    string screen;
+    while (!((memInstructions.getCell(ProgramCounter)) == "C0"&& (memInstructions.getCell(ProgramCounter + 1)) == "00")){ // != C000
         string LHS = memInstructions.getCell(ProgramCounter);
         string RHS = memInstructions.getCell(ProgramCounter + 1);
-        switch (LHS[0]){
-        case '1':
-            
-            break;
-        
-        default:
-            break;
-        }
 
-        // cout << memInstructions.getCell(ProgramCounter) << memInstructions.getCell(ProgramCounter + 1) << ' '; 
+        if(LHS[0] == '1'){
+            string temp = "";
+            temp += LHS[1];
+            load(temp,RHS,regInstructions, memInstructions);
+        }
+        else if(LHS[0] == '2'){
+            string temp = "";
+            temp += LHS[1];
+            load(temp,RHS,regInstructions);
+        }
+        else if(LHS[0] == '3'){
+            string temp = "";
+            temp += LHS[1];
+            store(temp,RHS,regInstructions, memInstructions,screen);
+        }
+        else if(LHS[0] == '4'){
+            string temp = "";
+            string temp2 = "";
+            temp += RHS[0];
+            temp2 += RHS[1];
+            move(temp,temp2,regInstructions);
+        }
+        else if(LHS[0] == '5'){
+            string temp = "";
+            string temp2 = "";
+            string temp3 = "";
+            temp += RHS[0];
+            temp2 += RHS[1];
+            string result = Twoscomplement(regInstructions.getCell(hexToDec(temp)),regInstructions.getCell(hexToDec(temp2)));
+            temp3 += LHS[1];
+            int R = hexToDec(temp3);
+            regInstructions.setCell(R, result);
+        }
+        else if(LHS[0] == '6'){
+            string temp = "";
+            string temp2 = "";
+            string temp3 = "";
+            temp += RHS[0];
+            temp2 += RHS[1];
+            string result = add2_IEEE_Float(regInstructions.getCell(hexToDec(temp)),regInstructions.getCell(hexToDec(temp2)));
+            temp3 += LHS[1];
+            int R = hexToDec(temp3);
+            regInstructions.setCell(R, result);
+        }
+        else if(LHS[0] == 'B'){
+            string temp = "";
+            temp += LHS[1];
+            cout << ProgramCounter << endl;
+            jump(temp,RHS,regInstructions, memInstructions,ProgramCounter);
+            cout << ProgramCounter << endl;
+        }
         ProgramCounter += 2;
+
+        if (checkstep){
+            displayMemory();
+            displayRegister();
+        }
     }
-    
+    cout << "Screen: "<< screen <<"\n";
 }
 /////////////////////////////////////////////////////////////////////////////////
 
