@@ -72,7 +72,7 @@ class CU: public Instructions, public ALU{
 //////////////////////////////////////////////////////////////////////////////////
 class Machine: public Register, public CU{
     public:
-    int ProgramCounter = 16;
+    int ProgramCounter = 10;
     void displayMemory();
     void displayRegister();
     void runInstruction(bool checkstep);

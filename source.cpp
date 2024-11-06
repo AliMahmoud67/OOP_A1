@@ -347,33 +347,6 @@ void Instructions::ReadFile(){
     instructFile.close();
 }
 
-// void Instructions::ReadFile(){
-//     string filename;
-//     ifstream instructFile;
-//     // validation of filename
-//     cout << "Enter Keywords' Filename: ";
-//     while (true){
-//         getline(cin, filename);
-//         instructFile.open(filename, ios::in);
-//         if (instructFile.is_open()){
-//             break;
-//         }else{
-//             cout << "Error Filename is Invalid: ";
-//         }
-//     }
-    
-//     string line;
-//     int j=0;
-    
-    
-//     while(getline(instructFile, line) && j < 16){ // 0000
-//         reg.setCell(j, line);
-//         j++;
-//     }
-//     instructFile.close();
-// }
-
-
 /////////////////////////////////////////////////////////////////////////////////
 void Machine::displayMemory(){
     // Print the array in a 2D format
@@ -446,18 +419,24 @@ void Machine::runInstruction(bool checkstep){
         else if(LHS[0] == 'B'){
             string temp = "";
             temp += LHS[1];
-            cout << ProgramCounter << endl;
             jump(temp,RHS,regInstructions, memInstructions,ProgramCounter);
-            cout << ProgramCounter << endl;
+            if (checkstep == 1){
+                displayMemory();
+                displayRegister();
+                cout << "Screen: " << screen <<"\n";
+            }
         }
         ProgramCounter += 2;
 
         if (checkstep){
             displayMemory();
             displayRegister();
+            cout << "Screen: " << screen <<"\n";
         }
     }
+    if(!checkstep){
     cout << "Screen: "<< screen <<"\n";
+    }
 }
 /////////////////////////////////////////////////////////////////////////////////
 
